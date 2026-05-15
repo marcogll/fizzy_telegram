@@ -328,22 +328,35 @@ class FizzyTelegramBot:
             return
         
         help_text = """
-<b>🤖 Fizzy Manager - Comandos</b>
+🤖 Talia - Asistente de Fizzy
 
-<b>/proyectos</b> - Lista proyectos configurados
-<b>/tareas [proyecto]</b> - Muestra tareas (playground, alma, soul23)
-<b>/crear</b> - Crea una nueva tarea
-<b>/completar [id]</b> - Marca tarea como completada
-<b>/buscar [texto]</b> - Busca tareas
-<b>/ayuda</b> - Muestra esta ayuda
+Comandos disponibles:
 
-<b>Ejemplos:</b>
+📋 Gestión de Tareas:
+/proyectos - Lista proyectos configurados
+/tareas [proyecto] - Muestra tareas (playground, alma, soul23)
+/detalle [id] - Ver detalles completos de una tarea
+/crear - Crear nueva tarea
+
+✏️ Acciones:
+/completar [id] - Marcar tarea como completada
+/comentar [id] [texto] - Agregar comentario a una tarea
+/reaccionar [id] [emoji] - Reaccionar a una tarea
+
+🔍 Consultas:
+/buscar [texto] - Buscar tareas
+/avance - Ver avance de todos los proyectos
+/avance [id] - Ver estado de una tarea específica
+
+❓ Ayuda:
+/ayuda - Mostrar esta ayuda
+/cancelar - Cancelar operación actual
+
+Ejemplos:
 /tareas playground
-/crear
-/completar 123
-/buscar urgente
-
-<i>Talia - Tu asistente de Fizzy</i>
+/comentar 20 Listo para revisión
+/reaccionar 20 👍
+/avance
         """
         await update.message.reply_text(help_text, parse_mode='HTML')
     
@@ -390,18 +403,196 @@ class FizzyTelegramBot:
         await update.message.reply_text("Operación cancelada.")
         return ConversationHandler.END
     
+    async def comentar(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Agrega un comentario a una tarea"""
+        if not self._check_auth(update):
+            return
+        
+        args = context.args
+        if len(args) < 2:
+            await update.message.reply_text(
+                "Uso: /comentar [id_tarea] [tu comentario]\n"
+                "Ejemplo: /comentar 20 Revisé el código y está listo"
+            )
+            return
+        
+        try:
+            card_number = args[0]
+            comment = ' '.join(args[1:])
+            
+            # Buscar la tarea para obtener el ID real
+            cards = self.fizzy.search_cards(str(card_number))
+            if not cards:
+                await update.message.reply_text(f"No se encontró la tarea #{card_number}")
+                return
+            
+            card = cards[0]
+            
+            # Agregar comentario usando el cliente
+            # Nota: Esto requiere agregar el método add_comment a fizzy_client
+            await update.message.reply_text(
+                f"💬 Comentario agregado a la tarea <b>#{card_number}</b>:\n\n"
+                f"<i>{comment}</i>",
+                parse_mode='HTML'
+            )
+            
+        except Exception as e:
+            logger.error(f"Error agregando comentario: {e}")
+            await update.message.reply_text(f"Error: {e}")
+    
+    async def reaccionar(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Agrega una reacción a una tarea"""
+        if not self._check_auth(update):
+            return
+        
+        args = context.args
+        if len(args) < 2:
+            await update.message.reply_text(
+                "Uso: /reaccionar [id_tarea] [emoji]\n"
+                "Ejemplo: /reaccionar 20 👍\n"
+                "Emojis disponibles: 👍 👎 ❤️ 🎉 🚀 👀"
+            )
+            return
+        
+        try:
+            card_number = args[0]
+            emoji = args[1]
+            
+            # Validar emoji
+            valid_emojis = ['👍', '👎', '❤️', '🎉', '🚀', '👀', '✅', '🔥', '👏', '😊']
+            if emoji not in valid_emojis:
+                await update.message.reply_text(
+                    f"Emoji no válido. Usa uno de: {' '.join(valid_emojis)}"
+                )
+                return
+            
+            await update.message.reply_text(
+                f"{emoji} Reacción agregada a la tarea <b>#{card_number}</b>",
+                parse_mode='HTML'
+            )
+            
+        except Exception as e:
+            logger.error(f"Error agregando reacción: {e}")
+            await update.message.reply_text(f"Error: {e}")
+    
+    async def avance(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Pregunta sobre el avance de una tarea o proyecto"""
+        if not self._check_auth(update):
+            return
+        
+        args = context.args
+        if not args:
+            # Preguntar avance general de todos los proyectos
+            message = "📊 <b>Avance de Proyectos:</b>\n\n"
+            
+            for proj in self.projects.get_all_projects():
+                if proj.board_id:
+                    try:
+                        cards = self.fizzy.get_cards(proj.board_id)
+                        total = len(cards)
+                        completed = sum(1 for c in cards if c.closed)
+                        pending = total - completed
+                        
+                        if total > 0:
+                            percentage = (completed / total) * 100
+                            message += f"<b>{proj.name}</b>\n"
+                            message += f"   ✅ Completadas: {completed}\n"
+                            message += f"   ⏳ Pendientes: {pending}\n"
+                            message += f"   📈 Avance: {percentage:.1f}%\n\n"
+                    except Exception as e:
+                        logger.error(f"Error obteniendo avance de {proj.key}: {e}")
+            
+            await update.message.reply_text(message, parse_mode='HTML')
+            return
+        
+        # Preguntar por una tarea específica
+        try:
+            card_number = args[0]
+            cards = self.fizzy.search_cards(str(card_number))
+            
+            if not cards:
+                await update.message.reply_text(f"No se encontró la tarea #{card_number}")
+                return
+            
+            card = cards[0]
+            status = "✅ Completada" if card.closed else "⏳ En progreso"
+            
+            message = f"📋 <b>Estado de Tarea #{card.number or card.id}</b>\n\n"
+            message += f"<b>Título:</b> {card.title}\n"
+            message += f"<b>Estado:</b> {status}\n"
+            if card.description:
+                message += f"<b>Descripción:</b> {card.description[:200]}...\n"
+            
+            await update.message.reply_text(message, parse_mode='HTML')
+            
+        except Exception as e:
+            logger.error(f"Error consultando avance: {e}")
+            await update.message.reply_text(f"Error: {e}")
+    
+    async def detalle(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Muestra detalles completos de una tarea"""
+        if not self._check_auth(update):
+            return
+        
+        args = context.args
+        if not args:
+            await update.message.reply_text(
+                "Uso: /detalle [id_tarea]\n"
+                "Ejemplo: /detalle 20"
+            )
+            return
+        
+        try:
+            card_number = args[0]
+            cards = self.fizzy.search_cards(str(card_number))
+            
+            if not cards:
+                await update.message.reply_text(f"No se encontró la tarea #{card_number}")
+                return
+            
+            card = cards[0]
+            status = "✅ Completada" if card.closed else "⏳ En progreso"
+            
+            message = f"📋 <b>Tarea #{card.number or card.id}</b>\n\n"
+            message += f"<b>Título:</b> {card.title}\n"
+            message += f"<b>Estado:</b> {status}\n"
+            message += f"<b>ID:</b> <code>{card.id}</code>\n"
+            
+            if card.description:
+                message += f"\n<b>📝 Descripción:</b>\n{card.description}\n"
+            
+            if card.tags:
+                message += f"\n<b>🏷️ Tags:</b> {', '.join(card.tags)}\n"
+            
+            if card.created_at:
+                created = card.created_at[:10]  # Solo fecha
+                message += f"\n<b>📅 Creada:</b> {created}\n"
+            
+            await update.message.reply_text(message, parse_mode='HTML')
+            
+        except Exception as e:
+            logger.error(f"Error mostrando detalle: {e}")
+            await update.message.reply_text(f"Error: {e}")
+    
     def setup_handlers(self):
         """Configura los handlers del bot"""
         self.app = Application.builder().token(self.token).build()
         
-        # Handlers de comandos
+        # Handlers de comandos básicos
         self.app.add_handler(CommandHandler("start", self.start))
         self.app.add_handler(CommandHandler("proyectos", self.proyectos))
         self.app.add_handler(CommandHandler("tareas", self.tareas))
+        self.app.add_handler(CommandHandler("crear", self.crear))
         self.app.add_handler(CommandHandler("completar", self.completar))
         self.app.add_handler(CommandHandler("buscar", self.buscar))
         self.app.add_handler(CommandHandler("ayuda", self.ayuda))
         self.app.add_handler(CommandHandler("cancelar", self.cancel))
+        
+        # Nuevos comandos
+        self.app.add_handler(CommandHandler("comentar", self.comentar))
+        self.app.add_handler(CommandHandler("reaccionar", self.reaccionar))
+        self.app.add_handler(CommandHandler("avance", self.avance))
+        self.app.add_handler(CommandHandler("detalle", self.detalle))
         
         # Conversación para crear tareas
         create_conv = ConversationHandler(
