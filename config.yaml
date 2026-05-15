@@ -1,0 +1,13 @@
+projects:
+  plygroid:
+    name: Plygroid - Personal
+    board_id: null
+    description: Proyectos personales de Plygroid
+  alma:
+    name: Alma - Socia
+    board_id: 03g4n1uuml8frgu2h27rouf0k
+    description: Tareas de mi socia Alma
+  soul23:
+    name: Soul23 - Clientes
+    board_id: 03g4n1u7rahazfwun6pxj7lk9
+    description: Tareas de otros clientes
