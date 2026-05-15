@@ -331,14 +331,14 @@ class FizzyTelegramBot:
 <b>🤖 Fizzy Manager - Comandos</b>
 
 <b>/proyectos</b> - Lista proyectos configurados
-<b>/tareas [proyecto]</b> - Muestra tareas (plygroid, alma, soul23)
+<b>/tareas [proyecto]</b> - Muestra tareas (playground, alma, soul23)
 <b>/crear</b> - Crea una nueva tarea
 <b>/completar [id]</b> - Marca tarea como completada
 <b>/buscar [texto]</b> - Busca tareas
 <b>/ayuda</b> - Muestra esta ayuda
 
 <b>Ejemplos:</b>
-/tareas plygroid
+/tareas playground
 /crear
 /completar 123
 /buscar urgente

@@ -20,7 +20,7 @@
 
 ## 📋 Características
 
-- **Gestión de Proyectos**: Organiza tareas en proyectos (plygroid, alma, soul23)
+- **Gestión de Proyectos**: Organiza tareas en proyectos (playground, alma, soul23)
 - **Bot de Telegram**: Interactúa con Fizzy mediante comandos de Telegram
 - **Notificaciones Automáticas**: Recibe alertas cuando se crean/modifican tareas
 - **Sincronización**: Mapea automáticamente boards de Fizzy a proyectos
@@ -79,7 +79,7 @@ BOT_NAME=Talia
 
 ```yaml
 projects:
-  plygroid:
+  playground:
     name: "Plygroid - Personal"
     board_id: null  # Se asigna automáticamente
     description: "Proyectos personales"
@@ -100,7 +100,7 @@ projects:
 | Comando | Descripción | Ejemplo |
 |---------|-------------|---------|
 | `/proyectos` | Lista proyectos configurados | `/proyectos` |
-| `/tareas [proyecto]` | Muestra tareas de un proyecto | `/tareas plygroid` |
+| `/tareas [proyecto]` | Muestra tareas de un proyecto | `/tareas playground` |
 | `/crear` | Crea una nueva tarea | `/crear` |
 | `/completar [id]` | Marca tarea como completada | `/completar 123` |
 | `/buscar [texto]` | Busca tareas | `/buscar urgente` |
@@ -138,7 +138,7 @@ fizzy_manager/
 ### Ver tareas de un proyecto
 
 ```
-/tareas plygroid
+/tareas playground
 ```
 
 ### Completar una tarea

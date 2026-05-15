@@ -1,8 +1,8 @@
 projects:
-  plygroid:
-    name: Plygroid - Personal
+  playground:
+    name: Playground - Personal
     board_id: 03g4n1ad77wseqhn6v3m8jyz1
-    description: Proyectos personales de Plygroid (Playground)
+    description: Proyectos personales de Playground
   alma:
     name: Alma - Socia
     board_id: 03g4n1uuml8frgu2h27rouf0k
