@@ -1,22 +1,39 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/marcogll/mg_data_storage/refs/heads/main/soul23/logo/soul23_logo.svg" width="110" alt="Soul23">
+  <a href="https://soul23.mx">
+    <picture>
+      <source
+        media="(prefers-color-scheme: dark)"
+        srcset="https://raw.githubusercontent.com/marcogll/mg_data_storage/refs/heads/main/soul23/logo/soul23_logo_wh.png">
+      <source
+        media="(prefers-color-scheme: light)"
+        srcset="https://raw.githubusercontent.com/marcogll/mg_data_storage/refs/heads/main/soul23/logo/soul23_logo_blk.png">
+      <img
+        src="https://raw.githubusercontent.com/marcogll/mg_data_storage/refs/heads/main/soul23/logo/soul23_logo_blk.png"
+        width="110"
+        alt="Soul:23">
+    </picture>
+  </a>
 </p>
 
-<h1 align="center">🤖 Fizzy Manager</h1>
+<h1 align="center">Fizzy Manager</h1>
 
 <p align="center">
-  Sistema de gestión de tareas Fizzy con integración a Telegram para el bot Talia 🚀
+  Sistema de gestión de tareas Fizzy con integración a Telegram para el bot Talia.
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.9+-3a3a3a?style=flat-square&logo=python&logoColor=white" alt="Python 3.9+">
-  <img src="https://img.shields.io/badge/Fizzy-3a3a3a?style=flat-square&logo=basecamp&logoColor=white" alt="Fizzy">
-  <img src="https://img.shields.io/badge/Telegram_Bot-3a3a3a?style=flat-square&logo=telegram&logoColor=white" alt="Telegram Bot">
-  <img src="https://img.shields.io/badge/Asyncio-3a3a3a?style=flat-square&logo=python&logoColor=white" alt="Asyncio">
-  <img src="https://img.shields.io/badge/Plygroid-3a3a3a?style=flat-square&logo=git&logoColor=white" alt="Plygroid">
+  <img src="https://img.shields.io/badge/Python-3a3a3a?style=flat-square&logo=python&logoColor=white">
+  <img src="https://img.shields.io/badge/Fizzy-3a3a3a?style=flat-square&logo=basecamp&logoColor=white">
+  <img src="https://img.shields.io/badge/Telegram-3a3a3a?style=flat-square&logo=telegram&logoColor=white">
 </p>
 
 ---
+
+## Description
+
+Sistema de gestión de tareas Fizzy con integración a Telegram para el bot Talia: creación y consulta de tareas directamente desde Telegram, con configuración por variables de entorno.
+
+Python 3.9+, asyncio y python-telegram-bot.
 
 ## 📋 Características
 
